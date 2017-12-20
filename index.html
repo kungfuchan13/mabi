@@ -93,18 +93,18 @@ function setTempo() {
 }
 
 function addNote() {
-	repeatCount = Math.floor(noteLength/(interval*1.5));
-	remainder = noteLength - interval*1.5*repeatCount;
+	var repeatCount = Math.floor(noteLength/(interval*1.5));
+	var remainder = noteLength - interval*1.5*repeatCount;
 
-	baseNote = "";
-	shift = "";
-	return = "";
+	var baseNote = "";
+	var shift = "";
+	var back = "";
 
 	for (i = 0; i < activeKey.length; i++) {
 		if (activeKey[i] == ">")
 			shift += activeKey[i];
 		else if (activeKey[i] == "<")
-			return += activeKey[i];
+			back += activeKey[i];
 		else
 			baseNote += activeKey[i];
 	}
@@ -119,7 +119,7 @@ function addNote() {
 
 	if (repeatCount > 0)
 		song += "&";
-	song += baseNote + calcTime(remainder/interval) + return;
+	song += baseNote + calcTime(remainder/interval) + back;
 
 	noteLength = 0;
 }
