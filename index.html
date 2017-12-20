@@ -92,41 +92,34 @@ function setTempo() {
 	interval = beat*(4/sensitivity);
 }
 
-function addBeat() {
-	if (curBeat == 0) {
-		song += calcTime(1-previousLast).toString() + "r";
-	}
-	for (i = 0; i < curBeat.length; i++) {
-		note = curBeat[i];
-		if (i == 0) {
-			song += calcTime(1 - previousLast + note[1]) + note[0];
-		}
-		else {
-			time = note[1] - curBeat[i-1][1];
-			song += calcTime(time) + note[0];
-		}
-	}
-	if (curBeat != 0)
-		previousLast = curBeat[curBeat.length - 1][1];
-	else
-		previousLast = 0;
-	curBeat = [];
-	song += "\n";
-}
-
 function addNote() {
 	repeatCount = Math.floor(noteLength/(interval*1.5));
 	remainder = noteLength - interval*1.5*repeatCount;
 
+	baseNote = "";
+	shift = "";
+	return = "";
+
+	for (i = 0; i < activeKey.length; i++) {
+		if (activeKey[i] == ">")
+			shift += activeKey[i];
+		else if (activeKey[i] == "<")
+			return += activeKey[i];
+		else
+			baseNote += activeKey[i];
+	}
+
+	song += shift;
+
 	for (i = 0; i < repeatCount; i++) {
 		if (i > 0)
 			song += "&";
-		song += activeKey + ".";
+		song += baseNote + ".";
 	}
 
 	if (repeatCount > 0)
 		song += "&";
-	song += activeKey + calcTime(remainder/interval);
+	song += baseNote + calcTime(remainder/interval) + return;
 
 	noteLength = 0;
 }
