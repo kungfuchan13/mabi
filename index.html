@@ -1,0 +1,210 @@
+<html onkeydown="addKey(event);" onkeyup="removeKey(event);">
+<div id="mtrnm" style="width: 100px; height: 100px; background-color: rgb(0, 0, 0);"></div>
+BPM: <input id="tempoIn" value="120"><br>
+Sensitivity: <input id="sens" value="1"><br>
+Blending: <input id="blendIn" value="8"><br>
+<input type="button" value="Reset" onclick="resetMetronome();"><br>
+<br>
+<div style="border: 5px solid purple; padding: 10px;">
+	A: <input id="65" value="c" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	S: <input id="83" value="d" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	D: <input id="68" value="e" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	F: <input id="70" value="f" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	G: <input id="71" value="g" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	H: <input id="72" value="a" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	J: <input id="74" value="b" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	K: <input id="75" value=">c<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	L: <input id="76" value=">d<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	;: <input id="186" value=">e<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	': <input id="222" value=">f<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;"><br>&nbsp;&nbsp;&nbsp;&nbsp;
+	Z: <input id="90" value="c" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	X: <input id="88" value="d" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	C: <input id="67" value="e" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	V: <input id="86" value="f" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	B: <input id="66" value="g" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	N: <input id="78" value="a" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	M: <input id="77" value="b" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	,: <input id="188" value=">c<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	.: <input id="190" value=">d<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	/: <input id="191" value=">e<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+</div>
+<br>
+<br>
+<br>
+<input id="test">
+<br>
+<br>
+<br>
+<br>
+<textarea id="songarea" style="width: 500px; height: 400px;" onfocus="recording = false;" onblur="recording = true;"></textarea>
+</html>
+
+<script>
+
+var fps = 10;
+var loop = setInterval(update, fps);
+
+var output = document.getElementById("output");
+
+var tempoIn = document.getElementById("tempoIn");
+var sens = document.getElementById("sens");
+var blendIn = document.getElementById("blendIn");
+var tempo = 120;
+var beat = 50
+var interval = 200;
+var sensitivity = 1;
+
+var noteLength = 0;
+
+var tick = 0;
+var mtrnm = document.getElementById("mtrnm");
+
+var activeKeys = {};
+var activeKey = false;
+
+var songarea = document.getElementById("songarea");
+var song = "";
+
+var recording = true;
+
+
+
+var keys = { '65' : 'c', '83' : 'd', '68' : 'e', '70' : 'f', '71' : 'g', '72' : 'a', '74' : 'b', '75' : '>c<', '76' : '>d<', '186' : '>e<', '222' : '>f<',
+		'90' : 'c', '88' : 'd', '67' : 'e', '86' : 'f', '66' : 'g', '78' : 'a', '77' : 'b', '188' : '>c<', '190' : '>d<', '191' : '>e<' };
+
+
+
+var TEST = document.getElementById("test");
+
+
+
+
+function update() {
+	if (tick < beat)
+		tick++;
+	else {
+		tick = 0;
+	}
+	metronome(tick/beat);
+
+	setTempo();
+
+	noteLength++;
+
+	displaySong();
+}
+
+function setTempo() {
+	tempo = parseInt(tempoIn.value);
+	beat = 60*1000/tempo/fps;
+	sensitivity = parseInt(sens.value);
+	interval = beat*(4/sensitivity);
+}
+
+function addBeat() {
+	if (curBeat == 0) {
+		song += calcTime(1-previousLast).toString() + "r";
+	}
+	for (i = 0; i < curBeat.length; i++) {
+		note = curBeat[i];
+		if (i == 0) {
+			song += calcTime(1 - previousLast + note[1]) + note[0];
+		}
+		else {
+			time = note[1] - curBeat[i-1][1];
+			song += calcTime(time) + note[0];
+		}
+	}
+	if (curBeat != 0)
+		previousLast = curBeat[curBeat.length - 1][1];
+	else
+		previousLast = 0;
+	curBeat = [];
+	song += "\n";
+}
+
+function addNote() {
+	repeatCount = Math.floor(noteLength/(interval*1.5));
+	remainder = noteLength - interval*1.5*repeatCount;
+
+	for (i = 0; i < repeatCount; i++) {
+		if (i > 0)
+			song += "&";
+		song += activeKey + ".";
+	}
+
+	if (repeatCount > 0)
+		song += "&";
+	song += activeKey + calcTime(remainder/interval);
+
+	noteLength = 0;
+}
+
+function addRest() {
+	repeatCount = Math.floor(noteLength/(interval*1.5));
+	remainder = noteLength - interval*1.5*repeatCount;
+
+	for (i = 0; i < repeatCount; i++) {
+		song += "r.";
+	}
+
+	song += "r" + calcTime(remainder/interval);
+	noteLength = 0;
+}
+
+
+
+function displaySong() {
+	songarea.value = "t" + tempo + "l" + Math.max(Math.min(Math.round(beat/(interval/4)), 64), 1) + song;
+}
+
+function metronome(rate) {
+	red = Math.floor(255 * rate);
+	green = 0;
+	blue = Math.floor(255 * rate);
+	mtrnm.style.backgroundColor = "rgb(" + red + ", " + green + ", " + blue + ")";
+}
+
+function resetMetronome() {
+	tick = 0;
+	song = "";
+}
+
+function calcTime(time) {
+	output = Math.round(Math.max(Math.min(1/time, 64), sensitivity));
+	return output.toString();
+}
+
+
+
+function addKey(event) {
+	if (recording) {
+		// JKL; = 74, 75, 76, 186
+		if (!activeKey && keys[event.keyCode.toString()])
+			addRest();
+		if (keys[event.keyCode.toString()]) {
+			if (activeKey && activeKey != keys[event.keyCode.toString()])
+				addNote();
+			activeKey = keys[event.keyCode.toString()];
+		}
+	}
+
+	TEST.value = event.keyCode;
+}
+
+function removeKey(event) {
+	if (recording) {
+		if (keys[event.keyCode.toString()] == activeKey) {
+			addNote();
+			activeKey = false;
+		}
+	}
+}
+
+
+
+function endLoop() {
+	clearInterval(loop);
+}
+
+</script>
