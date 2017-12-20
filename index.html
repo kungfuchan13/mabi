@@ -5,7 +5,7 @@ Sensitivity: <input id="sens" value="1"><br>
 <input type="button" value="Reset" onclick="resetMetronome();"><br>
 <br>
 <div style="border: 5px solid purple; padding: 10px;">
-	A: <input id="65" value="c" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	A: <input id="65" value="c" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
 	S: <input id="83" value="d" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
 	D: <input id="68" value="e" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
 	F: <input id="70" value="f" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
@@ -34,23 +34,20 @@ Sensitivity: <input id="sens" value="1"><br>
 <textarea id="songarea" style="width: 500px; height: 400px;" onfocus="recording = false;" onblur="recording = true;"></textarea>
 </html>
 
-<script>
 
+
+<script>
 var fps = 10;
 var loop = setInterval(update, fps);
 
-var output = document.getElementById("output");
-
 var tempoIn = document.getElementById("tempoIn");
 var sens = document.getElementById("sens");
-var blendIn = document.getElementById("blendIn");
 var tempo = 120;
 var beat = 50
 var interval = 200;
 var sensitivity = 1;
 
 var noteLength = 0;
-
 var tick = 0;
 var mtrnm = document.getElementById("mtrnm");
 
@@ -59,16 +56,19 @@ var activeKey = false;
 
 var songarea = document.getElementById("songarea");
 var song = "";
-
 var recording = true;
 
-
+var audioContext = new AudioContext();
+var oscillator = audioContext.createOscillator();
+oscillator.connect(audioContext.destination);
 
 var keys = { '65' : 'c', '83' : 'd', '68' : 'e', '70' : 'f', '71' : 'g', '72' : 'a', '74' : 'b', '75' : '>c<', '76' : '>d<', '186' : '>e<', '222' : '>f<',
 		'90' : 'c', '88' : 'd', '67' : 'e', '86' : 'f', '66' : 'g', '78' : 'a', '77' : 'b', '188' : '>c<', '190' : '>d<', '191' : '>e<' };
 
+const BASE_FREQS = { 'c' : 261.63, 'c+' : 277.18, 'd-' : 277.18, 'd' : 293.66, 'd+' : 311.13, 'e-' : 311.13, 'e' : 329.63, 'f' : 349.23, 'f+' : 369.99, 'g-' : 369.99, 'g' : 392, 'g+' : 415.3, 'a-' : 415.3, 'a' : 440, 'a+' : 466.16, 'b-' : 466.16, 'b' : 493.88 };
 
-
+var freq = { '65' : 261.63, '83' : 299.66, '68' : 329.63, '70' : 349.23, '71' : 392, '72' : 440, '74' : 493.88, '75' : 523.25, '76' : 587.33, '186' : 659.25, '222' : 698.46,
+		'90' : 261.63, '88' : 299.66, '67' : 329.63, '86' : 349.23, '66' : 392, '78' : 440, '77' : 493.88, '188' : 523.23, '190' : 587.33, '191' : 659.25 };
 
 function update() {
 	if (tick < beat)
@@ -77,11 +77,8 @@ function update() {
 		tick = 0;
 	}
 	metronome(tick/beat);
-
 	setTempo();
-
 	noteLength++;
-
 	displaySong();
 }
 
@@ -95,11 +92,9 @@ function setTempo() {
 function addNote() {
 	var repeatCount = Math.floor(noteLength/(interval*1.5));
 	var remainder = noteLength - interval*1.5*repeatCount;
-
 	var baseNote = "";
 	var shift = "";
 	var back = "";
-
 	for (i = 0; i < activeKey.length; i++) {
 		if (activeKey[i] == ">")
 			shift += activeKey[i];
@@ -108,30 +103,24 @@ function addNote() {
 		else
 			baseNote += activeKey[i];
 	}
-
 	song += shift;
-
 	for (i = 0; i < repeatCount; i++) {
 		if (i > 0)
 			song += "&";
 		song += baseNote + ".";
 	}
-
 	if (repeatCount > 0)
 		song += "&";
 	song += baseNote + calcTime(remainder/interval) + back;
-
 	noteLength = 0;
 }
 
 function addRest() {
 	repeatCount = Math.floor(noteLength/(interval*1.5));
 	remainder = noteLength - interval*1.5*repeatCount;
-
 	for (i = 0; i < repeatCount; i++) {
 		song += "r.";
 	}
-
 	song += "r" + calcTime(remainder/interval);
 	noteLength = 0;
 }
@@ -155,6 +144,8 @@ function resetMetronome() {
 	song = "";
 }
 
+
+
 function calcTime(time) {
 	output = Math.round(Math.max(Math.min(1/time, 64), sensitivity));
 	return output.toString();
@@ -163,6 +154,7 @@ function calcTime(time) {
 
 
 function addKey(event) {
+
 	if (recording) {
 		// JKL; = 74, 75, 76, 186
 		if (!activeKey && keys[event.keyCode.toString()])
@@ -173,9 +165,20 @@ function addKey(event) {
 			activeKey = keys[event.keyCode.toString()];
 		}
 	}
+
+	if (keys[event.keyCode.toString()]) {
+		oscillator.frequency.value = freq[event.keyCode.toString()];
+		oscillator.start();
+	}
 }
 
 function removeKey(event) {
+	if (keys[event.keyCode.toString()] == activeKey) {
+		oscillator.stop();
+		oscillator = audioContext.createOscillator();
+		oscillator.connect(audioContext.destination);
+	}
+
 	if (recording) {
 		if (keys[event.keyCode.toString()] == activeKey) {
 			addNote();
@@ -186,8 +189,36 @@ function removeKey(event) {
 
 
 
+function setKeyAndFreq(elem) {
+	id = elem.id;
+	keys[id] = elem.value;
+
+	note = elem.value;
+
+	var baseNote = "";
+	var shift = 0;
+	var shiftDir = true; //Right Default
+	if (note[0] == ">")
+		shiftDir = true;
+	else if (note[0] == "<")
+		shiftDir = false;
+	for (i = 0; i < note.length; i++) {
+		if (note[i] == ">" && shiftDir)
+			shift++;
+		else if (note[i] == "<" && !shiftDir)
+			shift--;
+		else if (note[i] != ">" && note[i] != "<")
+			baseNote += note[i];
+	}
+	//document.getElementById("sens").value = baseNote;
+	freq[id] = BASE_FREQS[baseNote] * Math.pow(2, shift);
+
+	recording = true;
+}
+
+
+
 function endLoop() {
 	clearInterval(loop);
 }
-
 </script>
