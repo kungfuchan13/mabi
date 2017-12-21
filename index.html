@@ -5,27 +5,28 @@ Sensitivity: <input id="sens" value="1"><br>
 <input type="button" value="Reset" onclick="resetMetronome();"><br>
 <br>
 <div style="border: 5px solid purple; padding: 10px;">
-	A: <input id="65" value="c" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
-	S: <input id="83" value="d" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	D: <input id="68" value="e" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	F: <input id="70" value="f" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	G: <input id="71" value="g" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	H: <input id="72" value="a" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	J: <input id="74" value="b" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	K: <input id="75" value=">c<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	L: <input id="76" value=">d<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	;: <input id="186" value=">e<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	': <input id="222" value=">f<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;"><br>&nbsp;&nbsp;&nbsp;&nbsp;
-	Z: <input id="90" value="c" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	X: <input id="88" value="d" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	C: <input id="67" value="e" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	V: <input id="86" value="f" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	B: <input id="66" value="g" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	N: <input id="78" value="a" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	M: <input id="77" value="b" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	,: <input id="188" value=">c<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	.: <input id="190" value=">d<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
-	/: <input id="191" value=">e<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="keys[this.id] = this.value; recording = true;">
+	A: <input id="65" value="c" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_Z.value=this.value; setKeyAndFreq(elem_Z);">
+	S: <input id="83" value="d" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_X.value=this.value; setKeyAndFreq(elem_X);">
+	D: <input id="68" value="e" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_C.value=this.value; setKeyAndFreq(elem_C);">
+	F: <input id="70" value="f" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_V.value=this.value; setKeyAndFreq(elem_V);">
+	G: <input id="71" value="g" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_B.value=this.value; setKeyAndFreq(elem_B);">
+	H: <input id="72" value="a" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_N.value=this.value; setKeyAndFreq(elem_N);">
+	J: <input id="74" value="b" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_M.value=this.value; setKeyAndFreq(elem_M);">
+	K: <input id="75" value=">c<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_DOT.value=this.value; setKeyAndFreq(elem_DOT);">
+	L: <input id="76" value=">d<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_COMMA.value=this.value; setKeyAndFreq(elem_COMMA);">
+	;: <input id="186" value=">e<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_SLASH.value=this.value; setKeyAndFreq(elem_SLASH);">
+	': <input id="222" value=">f<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);"><br>&nbsp;&nbsp;&nbsp;&nbsp;
+
+	Z: <input id="90" value="c" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
+	X: <input id="88" value="d" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
+	C: <input id="67" value="e" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
+	V: <input id="86" value="f" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
+	B: <input id="66" value="g" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
+	N: <input id="78" value="a" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
+	M: <input id="77" value="b" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
+	,: <input id="188" value=">c<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
+	.: <input id="190" value=">d<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
+	/: <input id="191" value=">e<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
 </div>
 <br>
 <br>
@@ -60,12 +61,22 @@ var recording = true;
 
 var audioContext = new AudioContext();
 var oscillator = audioContext.createOscillator();
-oscillator.connect(audioContext.destination);
 
 var keys = { '65' : 'c', '83' : 'd', '68' : 'e', '70' : 'f', '71' : 'g', '72' : 'a', '74' : 'b', '75' : '>c<', '76' : '>d<', '186' : '>e<', '222' : '>f<',
 		'90' : 'c', '88' : 'd', '67' : 'e', '86' : 'f', '66' : 'g', '78' : 'a', '77' : 'b', '188' : '>c<', '190' : '>d<', '191' : '>e<' };
 
 const BASE_FREQS = { 'c' : 261.63, 'c+' : 277.18, 'd-' : 277.18, 'd' : 293.66, 'd+' : 311.13, 'e-' : 311.13, 'e' : 329.63, 'f' : 349.23, 'f+' : 369.99, 'g-' : 369.99, 'g' : 392, 'g+' : 415.3, 'a-' : 415.3, 'a' : 440, 'a+' : 466.16, 'b-' : 466.16, 'b' : 493.88 };
+
+const elem_Z = document.getElementById("90");
+const elem_X = document.getElementById("88");
+const elem_C = document.getElementById("67");
+const elem_V = document.getElementById("86");
+const elem_B = document.getElementById("66");
+const elem_N = document.getElementById("78");
+const elem_M = document.getElementById("77");
+const elem_COMMA = document.getElementById("188");
+const elem_DOT = document.getElementById("190");
+const elem_SLASH = document.getElementById("191");
 
 var freq = { '65' : 261.63, '83' : 299.66, '68' : 329.63, '70' : 349.23, '71' : 392, '72' : 440, '74' : 493.88, '75' : 523.25, '76' : 587.33, '186' : 659.25, '222' : 698.46,
 		'90' : 261.63, '88' : 299.66, '67' : 329.63, '86' : 349.23, '66' : 392, '78' : 440, '77' : 493.88, '188' : 523.23, '190' : 587.33, '191' : 659.25 };
@@ -168,6 +179,7 @@ function addKey(event) {
 
 	if (keys[event.keyCode.toString()]) {
 		oscillator.frequency.value = freq[event.keyCode.toString()];
+		oscillator.connect(audioContext.destination);
 		oscillator.start();
 	}
 }
@@ -176,7 +188,6 @@ function removeKey(event) {
 	if (keys[event.keyCode.toString()] == activeKey) {
 		oscillator.stop();
 		oscillator = audioContext.createOscillator();
-		oscillator.connect(audioContext.destination);
 	}
 
 	if (recording) {
