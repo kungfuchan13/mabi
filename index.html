@@ -106,11 +106,23 @@ function addNote() {
 	var baseNote = "";
 	var shift = "";
 	var back = "";
+
+	var shiftDir = true;
+	if (activeKey[0] == "<")
+		shiftDir = false;
+
 	for (i = 0; i < activeKey.length; i++) {
-		if (activeKey[i] == ">")
-			shift += activeKey[i];
+		if (activeKey[i] == ">") {
+			if (shiftDir)
+				shift += ">";
+			else
+				back += ">"
+		}
 		else if (activeKey[i] == "<")
-			back += activeKey[i];
+			if (shiftDir)
+				back += "<";
+			else
+				shift += "<"
 		else
 			baseNote += activeKey[i];
 	}
