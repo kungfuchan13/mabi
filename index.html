@@ -186,26 +186,23 @@ function addKey(event) {
 			if (activeKey && activeKey != keys[event.keyCode.toString()])
 				addNote();
 			activeKey = keys[event.keyCode.toString()];
-		}
-	}
 
-	if (keys[event.keyCode.toString()]) {
-		oscillator.frequency.value = freq[event.keyCode.toString()];
-		oscillator.connect(audioContext.destination);
-		oscillator.start();
+			oscillator.frequency.value = freq[event.keyCode.toString()];
+			oscillator.connect(audioContext.destination);
+			oscillator.start();
+		}
 	}
 }
 
 function removeKey(event) {
-	if (keys[event.keyCode.toString()] == activeKey) {
-		oscillator.stop();
-		oscillator = audioContext.createOscillator();
-	}
 
 	if (recording) {
 		if (keys[event.keyCode.toString()] == activeKey) {
 			addNote();
 			activeKey = false;
+
+			oscillator.stop();
+			oscillator = audioContext.createOscillator();
 		}
 	}
 }
