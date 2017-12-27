@@ -12,10 +12,10 @@ Sensitivity: <input id="sens" value="1"><br>
 	G: <input id="71" value="g" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_B.value=this.value; setKeyAndFreq(elem_B);">
 	H: <input id="72" value="a" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_N.value=this.value; setKeyAndFreq(elem_N);">
 	J: <input id="74" value="b" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_M.value=this.value; setKeyAndFreq(elem_M);">
-	K: <input id="75" value=">c<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_COMMA.value=this.value; setKeyAndFreq(elem_COMMA);">
-	L: <input id="76" value=">d<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_DOT.value=this.value; setKeyAndFreq(elem_DOT);">
-	;: <input id="186" value=">e<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_SLASH.value=this.value; setKeyAndFreq(elem_SLASH);">
-	': <input id="222" value=">f<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);"><br>&nbsp;&nbsp;&nbsp;&nbsp;
+	K: <input id="75" value=">c" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_COMMA.value=this.value; setKeyAndFreq(elem_COMMA);">
+	L: <input id="76" value=">d" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_DOT.value=this.value; setKeyAndFreq(elem_DOT);">
+	;: <input id="186" value=">e" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this); elem_SLASH.value=this.value; setKeyAndFreq(elem_SLASH);">
+	': <input id="222" value=">f" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);"><br>&nbsp;&nbsp;&nbsp;&nbsp;
 
 	Z: <input id="90" value="c" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
 	X: <input id="88" value="d" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
@@ -24,9 +24,9 @@ Sensitivity: <input id="sens" value="1"><br>
 	B: <input id="66" value="g" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
 	N: <input id="78" value="a" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
 	M: <input id="77" value="b" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
-	,: <input id="188" value=">c<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
-	.: <input id="190" value=">d<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
-	/: <input id="191" value=">e<" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
+	,: <input id="188" value=">c" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
+	.: <input id="190" value=">d" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
+	/: <input id="191" value=">e" style="width: 25px; text-align: center;" onfocus="recording = false;" onblur="setKeyAndFreq(this);">
 </div>
 <br>
 <br>
@@ -58,12 +58,13 @@ var activeKey = false;
 var songarea = document.getElementById("songarea");
 var song = "";
 var recording = true;
+var octave = 0;
 
 var audioContext = new AudioContext();
 var oscillator = audioContext.createOscillator();
 
-var keys = { '65' : 'c', '83' : 'd', '68' : 'e', '70' : 'f', '71' : 'g', '72' : 'a', '74' : 'b', '75' : '>c<', '76' : '>d<', '186' : '>e<', '222' : '>f<',
-		'90' : 'c', '88' : 'd', '67' : 'e', '86' : 'f', '66' : 'g', '78' : 'a', '77' : 'b', '188' : '>c<', '190' : '>d<', '191' : '>e<' };
+var keys = { '65' : 'c', '83' : 'd', '68' : 'e', '70' : 'f', '71' : 'g', '72' : 'a', '74' : 'b', '75' : '>c', '76' : '>d', '186' : '>e', '222' : '>f',
+		'90' : 'c', '88' : 'd', '67' : 'e', '86' : 'f', '66' : 'g', '78' : 'a', '77' : 'b', '188' : '>c', '190' : '>d', '191' : '>e' };
 
 const BASE_FREQS = { 'c' : 261.63, 'c+' : 277.18, 'd-' : 277.18, 'd' : 293.66, 'd+' : 311.13, 'e-' : 311.13, 'e' : 329.63, 'f' : 349.23, 'f+' : 369.99, 'g-' : 369.99, 'g' : 392, 'g+' : 415.3, 'a-' : 415.3, 'a' : 440, 'a+' : 466.16, 'b-' : 466.16, 'b' : 493.88 };
 
@@ -104,44 +105,52 @@ function addNote() {
 	var repeatCount = Math.floor(noteLength/(interval*1.5));
 	var remainder = noteLength - interval*1.5*repeatCount;
 	var baseNote = "";
-	var shift = "";
-	var back = "";
+
+	var newOctave = 0;
 
 	var shiftDir = true;
 	if (activeKey[0] == "<")
 		shiftDir = false;
 
-	for (i = 0; i < activeKey.length; i++) {
+	for (var i = 0; i < activeKey.length; i++) {
 		if (activeKey[i] == ">") {
 			if (shiftDir)
-				shift += ">";
-			else
-				back += ">"
+				newOctave++;
 		}
-		else if (activeKey[i] == "<")
-			if (shiftDir)
-				back += "<";
-			else
-				shift += "<"
+		else if (activeKey[i] == "<") {
+			if (!shiftDir)
+				newOctave--;
+		}
 		else
 			baseNote += activeKey[i];
 	}
-	song += shift;
-	for (i = 0; i < repeatCount; i++) {
+
+	//tempoIn.value = Math.abs(octave - newOctave);
+
+	for (var i = 0; i < Math.abs(octave-newOctave); i++) {
+		if (octave < newOctave)
+			song += ">";
+		else
+			song += "<";
+	}
+
+	octave = newOctave;
+
+	for (var i = 0; i < repeatCount; i++) {
 		if (i > 0)
 			song += "&";
 		song += baseNote + ".";
 	}
 	if (repeatCount > 0)
 		song += "&";
-	song += baseNote + calcTime(remainder/interval) + back;
+	song += baseNote + calcTime(remainder/interval);
 	noteLength = 0;
 }
 
 function addRest() {
 	repeatCount = Math.floor(noteLength/(interval*1.5));
 	remainder = noteLength - interval*1.5*repeatCount;
-	for (i = 0; i < repeatCount; i++) {
+	for (var i = 0; i < repeatCount; i++) {
 		song += "r.";
 	}
 	song += "r" + calcTime(remainder/interval);
@@ -177,7 +186,6 @@ function calcTime(time) {
 
 
 function addKey(event) {
-
 	if (recording) {
 		// JKL; = 74, 75, 76, 186
 		if (!activeKey && keys[event.keyCode.toString()])
@@ -195,7 +203,6 @@ function addKey(event) {
 }
 
 function removeKey(event) {
-
 	if (recording) {
 		if (keys[event.keyCode.toString()] == activeKey) {
 			addNote();
@@ -222,7 +229,7 @@ function setKeyAndFreq(elem) {
 		shiftDir = true;
 	else if (note[0] == "<")
 		shiftDir = false;
-	for (i = 0; i < note.length; i++) {
+	for (var i = 0; i < note.length; i++) {
 		if (note[i] == ">" && shiftDir)
 			shift++;
 		else if (note[i] == "<" && !shiftDir)
@@ -230,7 +237,6 @@ function setKeyAndFreq(elem) {
 		else if (note[i] != ">" && note[i] != "<")
 			baseNote += note[i];
 	}
-	//document.getElementById("sens").value = baseNote;
 	freq[id] = BASE_FREQS[baseNote] * Math.pow(2, shift);
 
 	recording = true;
