@@ -61,7 +61,7 @@ var activeKey = [false, false, false];
 var songarea = document.getElementById("songarea");
 var song = ["", "", ""];
 var recording = true;
-var octave = 0;
+var octave = [0, 0, 0];
 
 var audioContext = new AudioContext();
 var oscillators = [audioContext.createOscillator(), audioContext.createOscillator(), audioContext.createOscillator()];
@@ -158,14 +158,13 @@ function addNote(num) {
 		else
 			baseNote += activeKey[num][i];
 	}
-	//tempoIn.value = Math.abs(octave - newOctave);
-	for (var i = 0; i < Math.abs(octave-newOctave); i++) {
-		if (octave < newOctave)
+	for (var i = 0; i < Math.abs(octave[num]-newOctave); i++) {
+		if (octave[num] < newOctave)
 			song[num] += ">";
 		else
 			song[num] += "<";
 	}
-	octave = newOctave;
+	octave[num] = newOctave;
 
 
 
@@ -229,7 +228,9 @@ function resetMetronome() {
 	noteLength[0] = 0;
 	noteLength[1] = 0;
 	noteLength[2] = 0;
-	octave = 0;
+	octave[0] = 0;
+	octave[1] = 0;
+	octave[2] = 0;
 	song = ["", "", ""];
 }
 
