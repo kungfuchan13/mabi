@@ -170,6 +170,7 @@ function addNote(num) {
 
 	var snapVal = Math.floor(logTwo(sensitivity))+1;
 	var length = breakDown(num);
+	var starting = true;
 	for (var i = 0; i < snapVal; i++) {
 		var repeatCount = length[i];
 		for (var ii = 0; ii < repeatCount; ii++) {
@@ -180,6 +181,7 @@ function addNote(num) {
 				song[num] += baseNote + Math.pow(2, i);
 			else
 				song[num] += baseNote;
+			starting = false;
 		}
 	}
 	noteLength[num] = 0;
