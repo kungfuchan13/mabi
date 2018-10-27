@@ -2,7 +2,6 @@
 <div id="mtrnm" style="width: 100px; height: 100px; background-color: rgb(0, 0, 0);"></div>
 BPM: <input id="tempoIn" value="120"><br>
 Snap To: <input id="sens" value="8" onblur="this.value = Math.max(1, Math.min(Math.pow(2, Math.round(logTwo(parseInt(this.value)))), 64));"><br>
-Miminum Length: <input id="mLen" value="32" onblur="this.value = Math.max(1, Math.min(Math.pow(2, Math.round(logTwo(parseInt(this.value)))), 64));"><br>
 <input type="button" value="Reset" onclick="resetMetronome();"><br>
 Start Song on Key Press<input id="checkStart" type="checkbox" checked="true"><br>
 <br>
@@ -45,7 +44,6 @@ var fps = 10;
 var loop = setInterval(update, fps);
 var tempoIn = document.getElementById("tempoIn");
 var sens = document.getElementById("sens");
-var mLen = document.getElementById("mLen");
 
 var checkStart = document.getElementById("checkStart");
 
@@ -53,7 +51,6 @@ var tempo = 120;
 var beat = 50
 var interval = 200;
 var sensitivity = 1;
-var minLen = 32;
 var standardBeat = 50;
 
 var tick = 0;
@@ -117,7 +114,6 @@ function setTempo() {
 	beat = 60*1000/tempo/fps;
 	sensitivity = parseInt(sens.value);
 	interval = beat*(4/sensitivity);
-	minLen = parseInt(mLen.value);
 }
 
 function breakDown(i) {
@@ -208,7 +204,8 @@ function addRest(num) {
 
 
 function displaySong() {
-	songarea.value = "MML@\n\n\nt" + tempo + "l" + Math.max(Math.min(Math.round(beat/(interval/4)), 64), 1) + song[0] + "\n\n,\n\n" + song[1] + "\n\n,\n\n" + song[2] + "\n\n;";
+	var length = Math.max(Math.min(Math.round(beat/(interval/4)), 64), 1);
+	songarea.value = "MML@\n\n\nt" + tempo + "l" + length + song[0] + "\n\n,\n\nl" + length + song[1] + "\n\n,\n\nl" + length + song[2] + "\n\n;";
 }
 
 
