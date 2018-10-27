@@ -1,8 +1,8 @@
 <html onkeydown="checkStart(); addKey(event);" onkeyup="removeKey(event);">
 <div id="mtrnm" style="width: 100px; height: 100px; background-color: rgb(0, 0, 0);"></div>
 BPM: <input id="tempoIn" value="120"><br>
-Snap To: <input id="sens" value="8"><br>
-Miminum Length: <input id="mLen" value="32"><br>
+Snap To: <input id="sens" value="8" onblur="this.value = Math.max(1, Math.min(Math.pow(2, Math.round(logTwo(parseInt(this.value)))), 64));"><br>
+Miminum Length: <input id="mLen" value="32" onblur="this.value = Math.max(1, Math.min(Math.pow(2, Math.round(logTwo(parseInt(this.value)))), 64));"><br>
 <input type="button" value="Reset" onclick="resetMetronome();"><br>
 Start Song on Key Press<input id="chckStrt" type="checkbox" checked="true"><br>
 <br>
@@ -157,7 +157,6 @@ function addNote() {
 		else
 			baseNote += activeKey[i];
 	}
-	//tempoIn.value = Math.abs(octave - newOctave);
 	for (var i = 0; i < Math.abs(octave-newOctave); i++) {
 		if (octave < newOctave)
 			song += ">";
