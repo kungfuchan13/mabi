@@ -1,0 +1,205 @@
+<style>
+.whiteKey {
+	width: 25px;
+	height: 75px;
+	border: 1px solid black;
+	position: absolute;
+}
+.blackKey {
+	width: 17px;
+	height: 50px;
+	border: 1px solid black;
+	background-color: black;
+	position: absolute;
+}
+</style>
+
+<html>
+<canvas id="canvas" width="2048" height="300"></canvas><br>
+<canvas id="time" width="4096" height="255"></canvas><br>
+<input id="lowCut" type="range" min="-100" max="0" value="-70">
+<textarea id="test"></textarea><br>
+
+<div style="position: fixed; right: 25px; top: 25px; width: 250px;">
+<div id="c" class="whiteKey"></div>
+<div id="d" class="whiteKey" style="left: 26px;"></div>
+<div id="e" class="whiteKey" style="left: 52px;"></div>
+<div id="f" class="whiteKey" style="left: 78px;"></div>
+<div id="g" class="whiteKey" style="left: 104px;"></div>
+<div id="a" class="whiteKey" style="left: 130px;"></div>
+<div id="b" class="whiteKey" style="left: 156px;"></div>
+<div id="c+" class="blackKey" style="left: 17px;"></div>
+<div id="d+" class="blackKey" style="left: 43px;"></div>
+<div id="f+" class="blackKey" style="left: 95px;"></div>
+<div id="g+" class="blackKey" style="left: 121px;"></div>
+<div id="a+" class="blackKey" style="left: 147px;"></div>
+</div>
+<br><br><br><br><br><br><br><br>
+<textarea id="log" style="width: 350; height: 250;"></textarea>
+</html>
+
+
+
+<script>
+
+var audioContext;
+var analyser;
+var microphone;
+var freqArrays;
+var freqArray;
+var timeArray;
+var currentArray = 0;
+
+var freqRangeSize = 0;
+
+var test = document.getElementById("test");
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+var time = document.getElementById("time");
+var ctx2 = time.getContext("2d");
+
+var log = document.getElementById("log");
+
+var fps = 100;
+
+const BASE_FREQS = { 261.63 : 'c', 277.18 : 'c+', 293.66 : 'd', 311.13 : 'd+', 329.63 : 'e', 349.23 : 'f', 369.99 : 'f+', 392 : 'g', 415.3 : 'g+', 440 : 'a', 466.16 : 'a+', 493.88 : 'b' };
+const UNMAPPED_FREQ = [261.63, 277.18, 293.66, 311.13, 329.63, 349.23, 369.99, 392, 415.3, 440, 466.16, 493.88];
+const KEYS = [document.getElementById("c"), document.getElementById("c+"), document.getElementById("d"), document.getElementById("d+"), document.getElementById("e"), document.getElementById("f"), document.getElementById("f+"), document.getElementById("g"), document.getElementById("g+"), document.getElementById("a"), document.getElementById("a+"), document.getElementById("b")];
+for (var i = 0; i < KEYS.length; i++) {
+	if (KEYS[i].className == "whiteKey")
+		KEYS[i].defaultColor = "white";
+	else
+		KEYS[i].defaultColor = "black";
+}
+
+navigator.mediaDevices.getUserMedia({audio: true})
+.then(function(stream) {
+	audioContext = new AudioContext();
+	analyser = audioContext.createAnalyser();
+	microphone = audioContext.createMediaStreamSource(stream);
+	microphone.connect(analyser);
+
+	freqArrays = [new Uint8Array(analyser.frequencyBinCount), new Uint8Array(analyser.frequencyBinCount), new Uint8Array(analyser.frequencyBinCount)];
+	freqArray = new Uint8Array(analyser.frequencyBinCount);
+	timeArray = new Uint8Array(analyser.fftSize);
+
+	freqRangeSize = audioContext.sampleRate/analyser.fftSize;
+	analyser.smoothingTimeConstant = 0.5;
+
+	setInterval(update, 1000/fps);
+})
+
+function freqToNote(frequency) {
+	if (!frequency) {
+		return "NOPE";
+	}
+	var bestMatch = 261.63;
+	var bestValue = 0;
+	log.value = "Now testing frequency ~ " + frequency + "\n";
+	for (var i = 0; i < UNMAPPED_FREQ.length; i++) {
+		var currentValue = Math.abs(Math.abs( Math.log(frequency / UNMAPPED_FREQ[i]) / Math.log(2) ) % 1 - 0.5);
+		log.value += "Compared to " + BASE_FREQS[UNMAPPED_FREQ[i]] + ": " + currentValue + "\n";
+		if (currentValue < bestValue && bestValue > 0.45)
+			return BASE_FREQS[bestMatch];
+		else  {
+			bestValue = currentValue;
+			bestMatch = UNMAPPED_FREQ[i];
+		}
+	}
+	if (bestValue > 0.45)
+		return BASE_FREQS[bestMatch];
+	return "NOPE";
+}
+
+function animateKeys(id) {
+	for (var i = 0; i < KEYS.length; i++) {
+		KEYS[i].style.backgroundColor = KEYS[i].defaultColor;
+	}
+	for (var i = 0; i < id.length; i++) {
+		if (id[i] != "NOPE") {
+			var currentKey = document.getElementById(id[i]);
+			if (currentKey.className == "whiteKey")
+				currentKey.style.backgroundColor = "#0ff";
+			else
+				currentKey.style.backgroundColor = "#0fa";
+		}
+	}
+}
+
+function averageAt(index, lists) {
+	var sum = 0;
+	for (var i = 0; i < lists.length; i++) {
+		sum += lists[i][index];
+	}
+	return sum/lists.length;
+}
+
+function averageAround(index, value) {
+	return index - averageAt(index-1, freqArrays)/value/2 + averageAt(index+1, freqArrays)/value/2
+}
+
+function update() {
+	analyser.minDecibels = parseInt(lowCut.value);
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.beginPath();
+	ctx.strokeStyle = "#FF0000";
+	ctx2.clearRect(0, 0, time.width, time.height);
+	ctx2.beginPath();
+
+	analyser.getByteFrequencyData(freqArrays[currentArray]);
+	if (currentArray < freqArrays.length-1) currentArray++;
+	else currentArray = 0;
+
+	analyser.getByteTimeDomainData(timeArray);
+
+	var hiVal = 0;
+	var hiInds = [0, 0, 0];
+	var hiVals = [0, 0, 0];
+	var hiInd = 0;
+	var prevVal = 0;
+	for (var i = 0; i < analyser.frequencyBinCount; i++) {
+		var currentVal = averageAt(i, freqArrays);
+		ctx.moveTo(i, canvas.height);
+		ctx.lineTo(i, canvas.height-currentVal);
+
+		if (currentVal > prevVal && currentVal >= averageAt(i+1, freqArrays)) {
+			for (var ii = 0; ii < hiVals.length; ii++) {
+				if (currentVal > hiVals[ii]) {
+					hiVals.splice(ii, 0, currentVal);
+					hiVals.pop();
+					hiInds.splice(ii, 0, i);
+					hiInds.pop();
+					break;
+				}
+				//hiVals[ii] = i;
+			}
+		}
+
+		if (currentVal > hiVal) {
+			hiVal = currentVal;
+			hiInd = i;
+		}
+
+		prevVal = currentVal;
+	}
+	ctx.stroke();
+	if (hiVals[1] < hiVals[0]*0.75) hiVals[1] = 0;
+	if (hiVals[2] < hiVals[0]*0.75) hiVals[2] = 0;
+	var averagedValues = [averageAround(hiInds[0], hiVals[0]), averageAround(hiInds[1], hiVals[1]), averageAround(hiInds[2], hiVals[2])];
+	var frequencies = [freqToNote(averagedValues[0]*freqRangeSize), freqToNote(averagedValues[1]*freqRangeSize), freqToNote(averagedValues[2]*freqRangeSize)];
+	test.value = hiInd + " ~ " + hiVal + " ~ " + hiVals;
+	test.value += "\nAverage At hiInd-1 ~ " + averageAt(hiInd-1, freqArrays)/hiVal/2;
+	test.value += "\nAverage At hiInd ~ " + hiVal;
+	test.value += "\nAverage At hiInd+1 ~ " + averageAt(hiInd+1, freqArrays)/hiVal/2;
+	test.value += "\nWeighted Indices ~ " + averagedValues;
+	test.value += "\nNotes Found ~ " + frequencies;
+	animateKeys(frequencies);
+
+	for (var i = 0; i < analyser.fftSize; i++) {
+		ctx2.moveTo(i, 0);
+		ctx2.lineTo(i, timeArray[i]);
+	}
+	ctx2.stroke();
+}
+
+</script>
