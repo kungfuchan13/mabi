@@ -15,7 +15,9 @@
 </style>
 
 <html>
-<canvas id="canvas" width="2048" height="300"></canvas><br>
+<input id="upload" accept="audio/*" type="file" onblur="setAudioSource();"><br>
+<audio id="soundFile"></audio>
+<canvas id="canvas" width="2048" height="255"></canvas><br>
 <canvas id="time" width="4096" height="255"></canvas><br>
 <input id="lowCut" type="range" min="-100" max="0" value="-70">
 <textarea id="test"></textarea><br>
@@ -34,7 +36,6 @@
 <div id="g+" class="blackKey" style="left: 121px;"></div>
 <div id="a+" class="blackKey" style="left: 147px;"></div>
 </div>
-<br><br><br><br><br><br><br><br>
 <textarea id="log" style="width: 350; height: 250;"></textarea>
 </html>
 
@@ -45,6 +46,7 @@
 var audioContext;
 var analyser;
 var microphone;
+var audioSource;
 var freqArrays;
 var freqArray;
 var timeArray;
@@ -57,6 +59,8 @@ var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 var time = document.getElementById("time");
 var ctx2 = time.getContext("2d");
+
+var soundFile = document.getElementById("soundFile");
 
 var log = document.getElementById("log");
 
@@ -89,16 +93,22 @@ navigator.mediaDevices.getUserMedia({audio: true})
 	setInterval(update, 1000/fps);
 })
 
+function setAudioSource() {
+	soundFile.src = URL.createObjectURL(document.getElementById("upload").files[0]);
+	soundFile.controls = true;
+	audioSource = audioContext.createMediaElementSource(soundFile);
+	microphone.disconnect();
+	audioSource.connect(analyser);
+}
+
 function freqToNote(frequency) {
 	if (!frequency) {
 		return "NOPE";
 	}
 	var bestMatch = 261.63;
 	var bestValue = 0;
-	log.value = "Now testing frequency ~ " + frequency + "\n";
 	for (var i = 0; i < UNMAPPED_FREQ.length; i++) {
 		var currentValue = Math.abs(Math.abs( Math.log(frequency / UNMAPPED_FREQ[i]) / Math.log(2) ) % 1 - 0.5);
-		log.value += "Compared to " + BASE_FREQS[UNMAPPED_FREQ[i]] + ": " + currentValue + "\n";
 		if (currentValue < bestValue && bestValue > 0.45)
 			return BASE_FREQS[bestMatch];
 		else  {
