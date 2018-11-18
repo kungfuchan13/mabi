@@ -194,7 +194,6 @@ function addNote() {
 function addRest() {
 	var snapVal = Math.floor(logTwo(sensitivity))+1;
 	var length = breakDown();
-	var starting = true;
 	for (var i = 0; i < snapVal; i++) {
 		var repeatCount = length[i];
 		for (var ii = 0; ii < repeatCount; ii++) {
@@ -202,11 +201,8 @@ function addRest() {
 				song += "r" + Math.pow(2, i);
 			else
 				song += "r";
-			starting = false;
 		}
 	}
-	if (starting)
-		song += "r" + minLen;
 	noteLength = 0;
 }
 
